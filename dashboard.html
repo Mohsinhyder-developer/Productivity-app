@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard — Stay Focused</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .streak-card {
+            text-align: center;
+            padding: 40px 28px;
+        }
+
+        .streak-best {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .checkin-section {
+            margin-top: 32px;
+        }
+
+        .checkin-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .checkin-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .motivation-card {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(99, 102, 241, 0.05));
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .motivation-card h3 {
+            color: var(--cyan);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .motivation-card p {
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .motivation-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .motivation-actions .btn {
+            flex: 1;
+        }
+
+        .sidebar-card {
+            padding: 24px;
+        }
+
+        .sidebar-card h3 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quick-stat {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .quick-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .quick-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .achievements-preview {
+            margin-top: 24px;
+        }
+
+        .achievement-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-mini.locked {
+            opacity: 0.4;
+        }
+
+        .achievement-mini span:first-child {
+            font-size: 24px;
+        }
+
+        .achievement-mini-info {
+            flex: 1;
+        }
+
+        .achievement-mini-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .achievement-mini-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .weekly-progress {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .weekly-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .weekly-days {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .weekly-day {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+        }
+
+        .weekly-day.completed {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .weekly-day.today {
+            border: 2px solid var(--accent);
+        }
+
+        .urge-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 24px;
+        }
+
+        .urge-modal.active {
+            display: flex;
+        }
+
+        .urge-content {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .urge-timer {
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="dashboard.html" class="nav-brand">
+            <div class="nav-logo">SF</div>
+            <span class="nav-title">Stay Focused</span>
+        </a>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="activity.html" class="nav-link">Activity</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-avatar" id="navAvatar">U</div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <!-- Main Content -->
+            <div>
+                <div class="card streak-card">
+                    <!-- Duolingo-style Streak Ring -->
+                    <div class="streak-ring-container">
+                        <svg class="streak-ring" viewBox="0 0 200 200">
+                            <defs>
+                                <linearGradient id="streakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#ff6b35" />
+                                    <stop offset="50%" style="stop-color:#f7931e" />
+                                    <stop offset="100%" style="stop-color:#ffcc00" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="streak-ring-bg" cx="100" cy="100" r="90" />
+                            <circle class="streak-ring-progress" id="streakProgress" cx="100" cy="100" r="90" />
+                        </svg>
+                        <div class="streak-center">
+                            <div class="streak-fire">🔥</div>
+                            <div class="streak-count" id="streakCount">0</div>
+                        </div>
+                    </div>
+                    <div class="streak-label">Day Streak</div>
+                    <div class="streak-best" id="bestStreak">
+                        <span>🏆</span> Best: 0 days
+                    </div>
+
+                    <!-- Check-in Section -->
+                    <div class="checkin-section">
+                        <div class="checkin-title">How was your day?</div>
+                        <div class="checkin-buttons">
+                            <button class="btn btn-success btn-lg" id="goodBtn">
+                                <span>✓</span> I stayed disciplined today
+                            </button>
+                            <button class="btn btn-warning btn-lg" id="badBtn">
+                                <span>✗</span> I struggled today
+                            </button>
+                            <button class="btn btn-ghost" id="urgeBtn">
+                                <span>🌊</span> I'm feeling an urge right now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Progress -->
+                    <div class="weekly-progress">
+                        <div class="weekly-title">This Week</div>
+                        <div class="weekly-days" id="weeklyDays">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motivation -->
+                <div class="card motivation-card">
+                    <h3><span>💡</span> <span id="motTitle">Daily Motivation</span></h3>
+                    <p id="motText">Small consistent wins compound into a stronger you.</p>
+                    <div class="motivation-actions">
+                        <button class="btn btn-primary" id="tipBtn">Get a tip</button>
+                        <button class="btn btn-ghost" id="refreshMot">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="card sidebar-card">
+                    <h3><span>📊</span> Quick Stats</h3>
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="statGood">0</div>
+                            <div class="quick-stat-label">Good Days</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="statBad">0</div>
+                            <div class="quick-stat-label">Struggles</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="statUrges">0</div>
+                            <div class="quick-stat-label">Urges</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="statLogins">0</div>
+                            <div class="quick-stat-label">Logins</div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Preview -->
+                    <div class="achievements-preview">
+                        <h3 style="font-size:1rem;margin-bottom:12px"><span>🏅</span> Achievements</h3>
+                        <div id="achievementsList">
+                            <!-- Filled by JS -->
+                        </div>
+                        <a href="profile.html" class="btn btn-ghost btn-block mt-2">View All</a>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card sidebar-card mt-3">
+                    <h3><span>📝</span> Recent Activity</h3>
+                    <div id="activityList" class="text-muted">No activity yet.</div>
+                    <a href="activity.html" class="btn btn-ghost btn-block mt-2">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <div class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="dashboard.html" class="bottom-nav-item active">
+                <span>🏠</span>
+                Home
+            </a>
+            <a href="activity.html" class="bottom-nav-item">
+                <span>📊</span>
+                Activity
+            </a>
+            <a href="profile.html" class="bottom-nav-item">
+                <span>👤</span>
+                Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Urge Modal -->
+    <div class="urge-modal" id="urgeModal">
+        <div class="urge-content">
+            <h2>🧘 Breathe</h2>
+            <p class="text-muted">Urges pass. Try delaying for 5 minutes.</p>
+            <div class="urge-timer" id="urgeTimer">05:00</div>
+            <div class="flex gap-2">
+                <button class="btn btn-success" id="urgeOkBtn">I'm okay now</button>
+                <button class="btn btn-ghost" id="urgeExtendBtn">+2 min</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import {
+            auth, db, ref, get, update,
+            onAuthStateChanged, logActivity, checkAuth
+        } from './js/firebase-config.js';
+
+        const TIPS = [
+            "Take a deep breath and do 10 squats.",
+            "Drink a glass of water and walk for 3 minutes.",
+            "Open a new file and write one line of code.",
+            "Listen to a 1-minute focus track.",
+            "Do a short breathing exercise for 2 minutes.",
+            "Call or text a friend to distract yourself.",
+            "Write down 3 things you're grateful for.",
+            "Step outside and get some fresh air."
+        ];
+
+        const ACHIEVEMENTS = [
+            { id: 'first', icon: '🌟', title: 'First Step', desc: 'Complete your first check-in', req: d => d.checkinsGood >= 1 },
+            { id: 'week', icon: '🔥', title: 'Week Warrior', desc: '7 day streak', req: d => d.bestStreak >= 7 },
+            { id: 'month', icon: '💎', title: 'Monthly Master', desc: '30 day streak', req: d => d.bestStreak >= 30 },
+            { id: 'century', icon: '👑', title: 'Century Club', desc: '100 day streak', req: d => d.bestStreak >= 100 }
+        ];
+
+        let currentUser = null;
+        let userData = {};
+
+        // Check auth
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = user;
+            await loadUserData();
+        });
+
+        async function loadUserData() {
+            const snap = await get(ref(db, 'users/' + currentUser.uid));
+            userData = snap.val() || {};
+
+            // Update UI
+            document.getElementById('navAvatar').textContent = (userData.name || 'U')[0].toUpperCase();
+            document.getElementById('streakCount').textContent = userData.streak || 0;
+            document.getElementById('bestStreak').innerHTML = `<span>🏆</span> Best: ${userData.bestStreak || 0} days`;
+
+            // Stats
+            document.getElementById('statGood').textContent = userData.checkinsGood || 0;
+            document.getElementById('statBad').textContent = userData.checkinsBad || 0;
+            document.getElementById('statUrges').textContent = userData.urges || 0;
+            document.getElementById('statLogins').textContent = userData.logins || 0;
+
+            // Streak ring animation
+            const progress = Math.min((userData.streak || 0) / 30, 1);
+            const circumference = 2 * Math.PI * 90;
+            const offset = circumference * (1 - progress);
+            document.getElementById('streakProgress').style.strokeDashoffset = offset;
+
+            // Weekly days
+            renderWeeklyDays();
+
+            // Achievements
+            renderAchievements();
+
+            // Activity
+            await loadActivity();
+        }
+
+        function renderWeeklyDays() {
+            const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            const today = new Date().getDay();
+            const lastCheckin = userData.lastCheckin ? new Date(userData.lastCheckin) : null;
+
+            let html = '';
+            for (let i = 0; i < 7; i++) {
+                const isToday = i === today;
+                const isCompleted = lastCheckin && i <= today && userData.streak > 0;
+                html += `<div class="weekly-day ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}">${days[i]}</div>`;
+            }
+            document.getElementById('weeklyDays').innerHTML = html;
+        }
+
+        function renderAchievements() {
+            let html = '';
+            ACHIEVEMENTS.slice(0, 3).forEach(ach => {
+                const unlocked = ach.req(userData);
+                html += `
+          <div class="achievement-mini ${unlocked ? '' : 'locked'}">
+            <span>${ach.icon}</span>
+            <div class="achievement-mini-info">
+              <h4>${ach.title}</h4>
+              <p>${ach.desc}</p>
+            </div>
+            ${unlocked ? '<span>✓</span>' : ''}
+          </div>
+        `;
+            });
+            document.getElementById('achievementsList').innerHTML = html;
+        }
+
+        async function loadActivity() {
+            const snap = await get(ref(db, 'activity/' + currentUser.uid));
+            const items = snap.exists() ? Object.values(snap.val()) : [];
+            const last5 = items.sort((a, b) => b.ts - a.ts).slice(0, 5);
+
+            if (last5.length === 0) {
+                document.getElementById('activityList').textContent = 'No activity yet.';
+            } else {
+                document.getElementById('activityList').innerHTML = last5.map(it => `
+          <div class="activity-item">
+            <span class="activity-text">${it.text}</span>
+            <span class="activity-time">${new Date(it.ts).toLocaleDateString()}</span>
+          </div>
+        `).join('');
+            }
+        }
+
+        // Check-in handlers
+        document.getElementById('goodBtn').addEventListener('click', () => doCheckIn(true));
+        document.getElementById('badBtn').addEventListener('click', () => doCheckIn(false));
+
+        async function doCheckIn(success) {
+            const today = new Date().toDateString();
+            if (userData.lastCheckin === today) {
+                alert('You already checked in today!');
+                return;
+            }
+
+            const newStreak = success ? (userData.streak || 0) + 1 : 0;
+            const updates = {
+                streak: newStreak,
+                bestStreak: Math.max(newStreak, userData.bestStreak || 0),
+                lastCheckin: today
+            };
+
+            if (success) updates.checkinsGood = (userData.checkinsGood || 0) + 1;
+            else updates.checkinsBad = (userData.checkinsBad || 0) + 1;
+
+            await update(ref(db, 'users/' + currentUser.uid), updates);
+            await logActivity(currentUser.uid, success ? 'Checked in — stayed disciplined' : 'Checked in — struggled');
+            await loadUserData();
+        }
+
+        // Urge handling
+        let urgeTimer = null;
+        let urgeRemaining = 0;
+
+        document.getElementById('urgeBtn').addEventListener('click', async () => {
+            await update(ref(db, 'users/' + currentUser.uid), { urges: (userData.urges || 0) + 1 });
+            await logActivity(currentUser.uid, 'Recorded an urge');
+            urgeRemaining = 300;
+            document.getElementById('urgeModal').classList.add('active');
+            startUrgeTimer();
+            await loadUserData();
+        });
+
+        function startUrgeTimer() {
+            renderUrgeTime();
+            urgeTimer = setInterval(() => {
+                urgeRemaining--;
+                renderUrgeTime();
+                if (urgeRemaining <= 0) {
+                    clearInterval(urgeTimer);
+                    document.getElementById('urgeModal').classList.remove('active');
+                }
+            }, 1000);
+        }
+
+        function renderUrgeTime() {
+            const m = String(Math.floor(urgeRemaining / 60)).padStart(2, '0');
+            const s = String(urgeRemaining % 60).padStart(2, '0');
+            document.getElementById('urgeTimer').textContent = `${m}:${s}`;
+        }
+
+        document.getElementById('urgeOkBtn').addEventListener('click', () => {
+            clearInterval(urgeTimer);
+            document.getElementById('urgeModal').classList.remove('active');
+        });
+
+        document.getElementById('urgeExtendBtn').addEventListener('click', () => {
+            urgeRemaining += 120;
+            renderUrgeTime();
+        });
+
+        // Motivation
+        document.getElementById('tipBtn').addEventListener('click', async () => {
+            document.getElementById('motTitle').textContent = 'Quick Tip';
+            document.getElementById('motText').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+            await logActivity(currentUser.uid, 'Viewed a tip');
+        });
+
+        document.getElementById('refreshMot').addEventListener('click', () => {
+            document.getElementById('motTitle').textContent = 'Motivation';
+            document.getElementById('motText').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+        });
+
+        // Init
+        document.getElementById('refreshMot').click();
+    </script>
+</body>
+
+</html>

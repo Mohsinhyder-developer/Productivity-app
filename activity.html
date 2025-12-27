@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Activity — Stay Focused</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .activity-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 10px 18px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .calendar-card {
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calendar-nav button {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 8px 0;
+            font-weight: 600;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--accent);
+        }
+
+        .calendar-day.checked-good {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .calendar-day.checked-bad {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: #1a1a1a;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .summary-card {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .summary-card h4 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .activity-list-container {
+            margin-top: 24px;
+        }
+
+        .activity-date-group {
+            margin-bottom: 24px;
+        }
+
+        .activity-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .activity-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .activity-entry:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .activity-icon.good {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .activity-icon.bad {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .activity-icon.urge {
+            background: rgba(6, 182, 212, 0.15);
+        }
+
+        .activity-icon.login {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content h4 {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .activity-content p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state span {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+
+    <nav class="nav">
+        <a href="dashboard.html" class="nav-brand">
+            <div class="nav-logo">SF</div>
+            <span class="nav-title">Stay Focused</span>
+        </a>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="activity.html" class="nav-link active">Activity</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-avatar" id="navAvatar">U</div>
+    </nav>
+
+    <div class="container container-md">
+        <div class="activity-header" style="margin-top:24px">
+            <h1>📊 Activity History</h1>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h4 id="thisWeek">0</h4>
+                <p>Check-ins This Week</p>
+            </div>
+            <div class="summary-card">
+                <h4 id="thisMonth">0</h4>
+                <p>Check-ins This Month</p>
+            </div>
+            <div class="summary-card">
+                <h4 id="totalDays">0</h4>
+                <p>Total Active Days</p>
+            </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="card calendar-card">
+            <div class="calendar-header">
+                <h3 id="calendarTitle">December 2025</h3>
+                <div class="calendar-nav">
+                    <button id="prevMonth">←</button>
+                    <button id="nextMonth">→</button>
+                </div>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+                <!-- Days filled by JS -->
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="checkin">Check-ins</button>
+            <button class="filter-tab" data-filter="urge">Urges</button>
+            <button class="filter-tab" data-filter="login">Logins</button>
+        </div>
+
+        <!-- Activity List -->
+        <div class="card">
+            <div class="activity-list-container" id="activityContainer">
+                <div class="empty-state">
+                    <span>📝</span>
+                    <p>No activity yet. Start by checking in on the dashboard!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="dashboard.html" class="bottom-nav-item"><span>🏠</span>Home</a>
+            <a href="activity.html" class="bottom-nav-item active"><span>📊</span>Activity</a>
+            <a href="profile.html" class="bottom-nav-item"><span>👤</span>Profile</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, ref, get, onAuthStateChanged } from './js/firebase-config.js';
+
+        let currentUser = null;
+        let allActivities = [];
+        let currentFilter = 'all';
+        let currentMonth = new Date();
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'index.html'; return; }
+            currentUser = user;
+
+            const userSnap = await get(ref(db, 'users/' + user.uid));
+            const userData = userSnap.val() || {};
+            document.getElementById('navAvatar').textContent = (userData.name || 'U')[0].toUpperCase();
+
+            await loadActivities();
+            renderCalendar();
+        });
+
+        async function loadActivities() {
+            const snap = await get(ref(db, 'activity/' + currentUser.uid));
+            allActivities = snap.exists() ? Object.values(snap.val()) : [];
+            allActivities.sort((a, b) => b.ts - a.ts);
+
+            updateSummary();
+            renderActivities();
+        }
+
+        function updateSummary() {
+            const now = new Date();
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+            const checkins = allActivities.filter(a => a.text.includes('Checked in'));
+            const thisWeek = checkins.filter(a => new Date(a.ts) >= weekAgo).length;
+            const thisMonth = checkins.filter(a => new Date(a.ts) >= monthStart).length;
+
+            document.getElementById('thisWeek').textContent = thisWeek;
+            document.getElementById('thisMonth').textContent = thisMonth;
+            document.getElementById('totalDays').textContent = checkins.length;
+        }
+
+        function getActivityIcon(text) {
+            if (text.includes('good') || text.includes('disciplined')) return { icon: '✓', type: 'good' };
+            if (text.includes('struggled') || text.includes('bad')) return { icon: '✗', type: 'bad' };
+            if (text.includes('urge') || text.includes('Urge')) return { icon: '🌊', type: 'urge' };
+            return { icon: '👤', type: 'login' };
+        }
+
+        function filterActivities() {
+            if (currentFilter === 'all') return allActivities;
+            return allActivities.filter(a => {
+                const { type } = getActivityIcon(a.text);
+                if (currentFilter === 'checkin') return type === 'good' || type === 'bad';
+                return type === currentFilter;
+            });
+        }
+
+        function renderActivities() {
+            const filtered = filterActivities();
+            const container = document.getElementById('activityContainer');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><span>📝</span><p>No activity found.</p></div>`;
+                return;
+            }
+
+            // Group by date
+            const groups = {};
+            filtered.forEach(a => {
+                const date = new Date(a.ts).toDateString();
+                if (!groups[date]) groups[date] = [];
+                groups[date].push(a);
+            });
+
+            let html = '';
+            Object.entries(groups).slice(0, 15).forEach(([date, items]) => {
+                html += `<div class="activity-date-group"><div class="activity-date">${date}</div>`;
+                items.forEach(item => {
+                    const { icon, type } = getActivityIcon(item.text);
+                    const time = new Date(item.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    html += `
+            <div class="activity-entry">
+              <div class="activity-icon ${type}">${icon}</div>
+              <div class="activity-content">
+                <h4>${item.text}</h4>
+                <p>${time}</p>
+              </div>
+            </div>
+          `;
+                });
+                html += '</div>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderActivities();
+            });
+        });
+
+        // Calendar
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const today = new Date();
+
+            document.getElementById('calendarTitle').textContent =
+                currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            // Get check-in dates
+            const goodDates = new Set();
+            const badDates = new Set();
+            allActivities.forEach(a => {
+                const d = new Date(a.ts);
+                if (d.getMonth() === month && d.getFullYear() === year) {
+                    const dayStr = d.getDate();
+                    if (a.text.includes('good') || a.text.includes('disciplined')) goodDates.add(dayStr);
+                    if (a.text.includes('struggled')) badDates.add(dayStr);
+                }
+            });
+
+            let html = `
+        <div class="calendar-day-header">Sun</div>
+        <div class="calendar-day-header">Mon</div>
+        <div class="calendar-day-header">Tue</div>
+        <div class="calendar-day-header">Wed</div>
+        <div class="calendar-day-header">Thu</div>
+        <div class="calendar-day-header">Fri</div>
+        <div class="calendar-day-header">Sat</div>
+      `;
+
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                html += `<div class="calendar-day other-month">${daysInPrevMonth - i}</div>`;
+            }
+
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                const isGood = goodDates.has(day);
+                const isBad = badDates.has(day);
+
+                let classes = 'calendar-day';
+                if (isToday) classes += ' today';
+                if (isGood) classes += ' checked-good';
+                else if (isBad) classes += ' checked-bad';
+
+                html += `<div class="${classes}">${day}</div>`;
+            }
+
+            // Next month days
+            const totalCells = firstDay + daysInMonth;
+            const remaining = 7 - (totalCells % 7);
+            if (remaining < 7) {
+                for (let i = 1; i <= remaining; i++) {
+                    html += `<div class="calendar-day other-month">${i}</div>`;
+                }
+            }
+
+            document.getElementById('calendarGrid').innerHTML = html;
+        }
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar();
+        });
+    </script>
+</body>
+
+</html>

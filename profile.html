@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile — Stay Focused</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 12px 40px rgba(168, 85, 247, 0.3);
+        }
+
+        .profile-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            color: var(--text-muted);
+        }
+
+        .profile-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .profile-actions {
+                margin: 16px auto 0;
+            }
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .edit-form {
+            display: none;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .streak-highlight {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 204, 0, 0.05));
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+
+        .streak-highlight-fire {
+            font-size: 48px;
+        }
+
+        .streak-highlight-info h3 {
+            font-size: 1.5rem;
+        }
+
+        .streak-highlight-info p {
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .danger-zone {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .danger-zone h3 {
+            color: var(--danger);
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+
+    <nav class="nav">
+        <a href="dashboard.html" class="nav-brand">
+            <div class="nav-logo">SF</div>
+            <span class="nav-title">Stay Focused</span>
+        </a>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="activity.html" class="nav-link">Activity</a>
+            <a href="profile.html" class="nav-link active">Profile</a>
+        </div>
+        <div class="nav-avatar" id="navAvatar">U</div>
+    </nav>
+
+    <div class="container container-md">
+        <div class="card" style="margin-top:24px">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <div class="profile-info">
+                    <h1 id="profileName">User</h1>
+                    <p id="profileEmail">user@example.com</p>
+                    <div class="flex gap-2 mt-1">
+                        <span class="badge badge-accent" id="memberBadge">Member</span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="editBtn">Edit Profile</button>
+                    <button class="btn btn-ghost" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+
+            <!-- Edit Form -->
+            <form id="editForm" class="edit-form">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" id="editName" class="form-input" required>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <button type="button" class="btn btn-ghost" id="cancelEdit">Cancel</button>
+                </div>
+            </form>
+
+            <!-- Streak Highlight -->
+            <div class="streak-highlight">
+                <div class="streak-highlight-fire">🔥</div>
+                <div class="streak-highlight-info">
+                    <h3 id="currentStreak">0 Day Streak</h3>
+                    <p id="bestStreakText">Best: 0 days</p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="section-title"><span>📊</span> Your Statistics</div>
+            <div class="grid grid-4 mb-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="statLogins">0</div>
+                    <div class="stat-label">Total Logins</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statGood">0</div>
+                    <div class="stat-label">Good Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statBad">0</div>
+                    <div class="stat-label">Struggles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statUrges">0</div>
+                    <div class="stat-label">Urges Tracked</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="card mt-3">
+            <div class="section-title"><span>🏅</span> Achievements</div>
+            <div class="achievements-grid" id="achievementsList">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+        <!-- Account -->
+        <div class="card mt-3">
+            <div class="section-title"><span>⚙️</span> Account Settings</div>
+            <p class="text-muted mb-2">Manage your account preferences</p>
+
+            <div class="flex gap-2">
+                <button class="btn btn-ghost" id="exportBtn">Export My Data</button>
+            </div>
+
+            <div class="danger-zone">
+                <h3>Danger Zone</h3>
+                <p class="text-muted mb-2">Once you sign out, you'll need to sign in again to access your data.</p>
+                <button class="btn btn-ghost" id="signOutBtn"
+                    style="border-color: var(--danger); color: var(--danger);">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="dashboard.html" class="bottom-nav-item"><span>🏠</span>Home</a>
+            <a href="activity.html" class="bottom-nav-item"><span>📊</span>Activity</a>
+            <a href="profile.html" class="bottom-nav-item active"><span>👤</span>Profile</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, ref, get, update, signOut, onAuthStateChanged, logActivity } from './js/firebase-config.js';
+
+        const ACHIEVEMENTS = [
+            { id: 'first', icon: '🌟', title: 'First Step', desc: 'Complete your first check-in', req: d => (d.checkinsGood || 0) >= 1 },
+            { id: 'week', icon: '🔥', title: 'Week Warrior', desc: 'Achieve a 7 day streak', req: d => (d.bestStreak || 0) >= 7 },
+            { id: 'two_weeks', icon: '💪', title: 'Fortnight Fighter', desc: 'Achieve a 14 day streak', req: d => (d.bestStreak || 0) >= 14 },
+            { id: 'month', icon: '💎', title: 'Monthly Master', desc: 'Achieve a 30 day streak', req: d => (d.bestStreak || 0) >= 30 },
+            { id: 'fifty', icon: '🎯', title: 'Halfway Hero', desc: 'Achieve a 50 day streak', req: d => (d.bestStreak || 0) >= 50 },
+            { id: 'century', icon: '👑', title: 'Century Club', desc: 'Achieve a 100 day streak', req: d => (d.bestStreak || 0) >= 100 },
+            { id: 'urge_master', icon: '🧘', title: 'Urge Master', desc: 'Track 10 urges without breaking', req: d => (d.urges || 0) >= 10 && (d.streak || 0) > 0 },
+            { id: 'dedicated', icon: '🏆', title: 'Dedicated', desc: 'Log in 50 times', req: d => (d.logins || 0) >= 50 }
+        ];
+
+        let currentUser = null;
+        let userData = {};
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'index.html'; return; }
+            currentUser = user;
+            await loadProfile();
+        });
+
+        async function loadProfile() {
+            const snap = await get(ref(db, 'users/' + currentUser.uid));
+            userData = snap.val() || {};
+
+            document.getElementById('navAvatar').textContent = (userData.name || 'U')[0].toUpperCase();
+            document.getElementById('profileAvatar').textContent = (userData.name || 'U')[0].toUpperCase();
+            document.getElementById('profileName').textContent = userData.name || 'User';
+            document.getElementById('profileEmail').textContent = userData.email || (currentUser.isAnonymous ? 'Guest Account' : currentUser.email);
+            document.getElementById('editName').value = userData.name || '';
+
+            // Member since
+            const created = userData.createdAt ? new Date(userData.createdAt) : new Date();
+            document.getElementById('memberBadge').textContent = `Member since ${created.toLocaleDateString()}`;
+
+            // Streak
+            document.getElementById('currentStreak').textContent = `${userData.streak || 0} Day Streak`;
+            document.getElementById('bestStreakText').textContent = `Best: ${userData.bestStreak || 0} days`;
+
+            // Stats
+            document.getElementById('statLogins').textContent = userData.logins || 0;
+            document.getElementById('statGood').textContent = userData.checkinsGood || 0;
+            document.getElementById('statBad').textContent = userData.checkinsBad || 0;
+            document.getElementById('statUrges').textContent = userData.urges || 0;
+
+            // Achievements
+            renderAchievements();
+        }
+
+        function renderAchievements() {
+            document.getElementById('achievementsList').innerHTML = ACHIEVEMENTS.map(ach => {
+                const unlocked = ach.req(userData);
+                return `
+          <div class="achievement ${unlocked ? '' : 'locked'}">
+            <div class="achievement-icon">${ach.icon}</div>
+            <div class="achievement-info">
+              <h4>${ach.title}</h4>
+              <p>${ach.desc}</p>
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        // Edit profile
+        document.getElementById('editBtn').addEventListener('click', () => {
+            document.getElementById('editForm').classList.add('active');
+        });
+
+        document.getElementById('cancelEdit').addEventListener('click', () => {
+            document.getElementById('editForm').classList.remove('active');
+        });
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newName = document.getElementById('editName').value.trim();
+            if (!newName) return;
+
+            await update(ref(db, 'users/' + currentUser.uid), { name: newName });
+            await logActivity(currentUser.uid, 'Updated profile');
+            document.getElementById('editForm').classList.remove('active');
+            await loadProfile();
+        });
+
+        // Export data
+        document.getElementById('exportBtn').addEventListener('click', async () => {
+            const actSnap = await get(ref(db, 'activity/' + currentUser.uid));
+            const activities = actSnap.exists() ? Object.values(actSnap.val()) : [];
+
+            const exportData = { profile: userData, activities };
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stayfocused-data.json';
+            a.click();
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('signOutBtn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>
