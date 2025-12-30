@@ -2,7 +2,7 @@
   "name": "Stay Focused",
   "short_name": "Stay Focused",
   "description": "Build better habits and stay focused. Track your streak and achieve your goals.",
-  "start_url": "/",
+  "start_url": "./",
   "scope": "/Productivity-app/",
   "display": "standalone",
   "background_color": "#0a0a0a",
